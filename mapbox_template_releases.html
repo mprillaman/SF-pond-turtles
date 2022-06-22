@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Template</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+</head>
+<body>
+   body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    .map-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background: rgba(255, 255, 255, 0.8);
+      margin-left: 20px;
+      font-family: Arial, sans-serif;
+      overflow: auto;
+      border-radius: 3px;
+    }
+<div id='map'></div>
+<div class='map-overlay' id='legend'></div>
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibXByaWxsYW1hbiIsImEiOiJja3o2bDEyazcxMW13Mm5waDQ2eW12Z2hrIn0.KP6KdB--gwgLpjUUBRDGjg';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mprillaman/cl04ee479000014nr4w30kf74',
+  center: [-121.2, 38.4],
+  zoom: 6.8
+});
+
+// Add zoom and rotation controls to the map. 
+map.addControl(new mapboxgl.NavigationControl()); 
+
+// Disable scroll zooming 
+map.scrollZoom.disable();
+
+// Add popup
+map.on('click', function(e) {
+var features = map.queryRenderedFeatures(e.point, {
+layers: ['sfzooreleases-c4096w'] // add the name of the quakes layer from your map between the single quotes!
+});
+
+if (!features.length) {
+return;
+}
+
+var feature = features[0];
+
+var popup = new mapboxgl.Popup({ offset: [0, -15] })
+.setLngLat(feature.geometry.coordinates)
+.setHTML('<b>Location: </b>' + feature.properties.location + '<br><b>Turtles Released: </b>' + feature.properties.turtles + '<br><b>Year(s): </b>' + feature.properties.years + '<br><b>Partner(s): </b>' + feature.properties.partners)
+.setLngLat(feature.geometry.coordinates)
+.addTo(map);
+});
+
+</script>
+
+</body>
+</html>
