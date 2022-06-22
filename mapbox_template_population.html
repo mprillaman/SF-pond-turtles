@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Template</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    .map-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background: rgba(255, 255, 255, 0.8);
+      margin-left: 20px;
+      font-family: Arial, sans-serif;
+      overflow: auto;
+      border-radius: 3px;
+    }
+
+    #legend {
+      padding: 10px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      line-height: 18px;
+      margin-bottom: 40px;
+    }
+
+    .legend-key {
+      display: inline-block;
+      border-radius: 20%;
+      width: 10px;
+      height: 10px;
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+<div class='map-overlay' id='legend'></div>
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibXByaWxsYW1hbiIsImEiOiJja3o2bDEyazcxMW13Mm5waDQ2eW12Z2hrIn0.KP6KdB--gwgLpjUUBRDGjg';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mprillaman/ckz7j3m7g000014qgb1wy6avr',
+  center: [-122, 39],
+  zoom: 3.8
+});
+
+// Add zoom and rotation controls to the map. 
+map.addControl(new mapboxgl.NavigationControl()); 
+
+// Disable scroll zooming 
+map.scrollZoom.disable();
+
+// Create legend
+map.on('load', function() {
+
+  var layers = [' Northwestern Pond Turtle', ' Southwestern Pond Turtle', ' Range'];
+  var colors = ['#018571','#a6611a', '#00000030'];
+
+  for (i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    var color = colors[i];
+    var item = document.createElement('div');
+    var key = document.createElement('span');
+    key.className = 'legend-key';
+    key.style.backgroundColor = color;
+
+    var value = document.createElement('span');
+    value.innerHTML = layer;
+    item.appendChild(key);
+    item.appendChild(value);
+    legend.appendChild(item);
+ }
+});
+
+// Add popup
+map.on('click', function(e) {
+var features = map.queryRenderedFeatures(e.point, {
+layers: ['table-s3-final-79n269'] // add the name of the quakes layer from your map between the single quotes!
+});
+
+if (!features.length) {
+return;
+}
+
+var feature = features[0];
+
+var popup = new mapboxgl.Popup({ offset: [0, -15] })
+.setLngLat(feature.geometry.coordinates)
+.setHTML('<b>Average Number of Turtles per Year: </b>' + feature.properties.meanUniqueCaptures + '<br><b>Year(s): </b>' + feature.properties.years + '<br><b>Site: </b>' + feature.properties.site + '<br><b>County: </b>' + feature.properties.county)
+.setLngLat(feature.geometry.coordinates)
+.addTo(map);
+});
+
+</script>
+
+</body>
+</html>
